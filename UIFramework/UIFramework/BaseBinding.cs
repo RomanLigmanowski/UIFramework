@@ -1,7 +1,7 @@
 ﻿using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.Assist;
 using UIFramework.PageObjects;
-using UIFramework.PageObjects.ReportsAndSettingsMenu;
+using UIFramework.PageObjects.SalesAndMarketingMenu.Contacts;
 using UIFramework.PageObjects.SalesAndMarketingMenu.Contacts.Contacts;
 
 namespace UIFramework
@@ -9,10 +9,6 @@ namespace UIFramework
     [Binding]
     public class BaseBinding : BaseTestClass
     {
-        public BaseBinding() : base()
-        {
-        }
-
         [BeforeScenario]
         public void BeforeScenario() 
         {
@@ -41,21 +37,40 @@ namespace UIFramework
             mainPage.SalesAndMarketingMenu().OpenContacts().CreateContact();
         }
 
-        [Then(@"Creates contact with below data:")]
+        [When(@"Creates contact with below data:")]
         public void ThenCreatesContactWithBelowData(Table table)
         {
             dynamic data = table.CreateDynamicInstance(false);
+            var categories = ((string)data.categories).Split(",").Select(x => x.Trim()).ToList();
 
-            var page = new CreateContact(driver);
-
-            page.EnterFirstName((string)data.firstName)
+            new CreateContact(driver)
+                .EnterFirstName((string)data.firstName)
                 .EnterLastName((string)data.lastName)
-                .SelectRole(Enum.Parse(typeof(Roles), data.role));
-
-            var categories = ((string)data.categories).Split(",").Select(x => x.Trim());
-
-            page.SelectCategories(categories.ToList());
+                .SelectRole(Enum.Parse(typeof(Roles), data.role))
+                .SelectCategories((List<string>)categories)
+                .SaveForm();
         }
 
+        [Then(@"Verify user data stored in scenario context:")]
+        public void VerifyUserDataStoredInScenarioContext(Table table)
+        {
+            dynamic data = table.CreateDynamicInstance(false);
+            var categories = ((string)data.categories).Split(",").Select(x => x.Trim()).ToList();
+            var page = new ContactView(driver);
+
+            Assert.AreEqual(data.firstName, page.GetFirstName());
+            Assert.AreEqual(data.lastName, page.GetLastName());
+            Assert.AreEqual(data.role, page.GetRole());
+            Assert.AreEqual(categories, page.GetCategories());
+        }
+
+    }
+
+    public class UserData
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Role { get; set; }
+        public List<string> Categories { get; set; }
     }
 }

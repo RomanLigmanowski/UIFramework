@@ -23,7 +23,9 @@ namespace UIFramework
 
         public static void ClickUsingActions(this IWebElement element, IWebDriver driver) 
         {
+            //MoveToElement needs to be used twice because sometimes selenium is not fucusing correctly
             new Actions(driver)
+                .MoveToElement(element)
                 .MoveToElement(element)
                 .Click()
                 .Perform();

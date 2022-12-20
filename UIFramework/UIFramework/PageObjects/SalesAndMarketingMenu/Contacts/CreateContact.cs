@@ -1,5 +1,4 @@
 ﻿using OpenQA.Selenium;
-using OpenQA.Selenium.Interactions;
 
 namespace UIFramework.PageObjects.SalesAndMarketingMenu.Contacts.Contacts
 {
@@ -14,6 +13,8 @@ namespace UIFramework.PageObjects.SalesAndMarketingMenu.Contacts.Contacts
         private IWebElement categoryMultiSelect => _driver.FindElementWithWait(By.Id("DetailFormcategories-input"));
         private IWebElement categoryOption(string option) =>
             _driver.FindElementWithWait(By.XPath($"//div[@id='DetailFormcategories-input-search-list']//div[contains(text(),'{option}')]"));
+        private IWebElement saveButton => _driver.FindElement(By.Id("DetailForm_save2"));
+
         public CreateContact(IWebDriver driver) : base(driver) => _driver = driver;
 
         public CreateContact EnterFirstName(string firstName)
@@ -47,6 +48,14 @@ namespace UIFramework.PageObjects.SalesAndMarketingMenu.Contacts.Contacts
             }            
 
             return this;
+        }
+
+        public ContactView SaveForm()
+        {
+            saveButton.Click();
+            new ContactsList(_driver).ConfirmSave();
+
+            return new ContactView(_driver);
         }
     }
 

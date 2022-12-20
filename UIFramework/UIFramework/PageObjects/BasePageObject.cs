@@ -18,7 +18,8 @@ namespace UIFramework.PageObjects
 
                 while (!pageLoaded)
                 {
-                    pageLoaded = loading.First().Text.Contains("Loading") ? false : true;
+                    var loadSaveText = loading.First().Text;
+                    pageLoaded = loadSaveText.Contains("Loading") | loadSaveText.Contains("Saving") ? false : true;
                 }
             }
         }
